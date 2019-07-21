@@ -16,7 +16,7 @@ module.exports = {
         })
         .catch(next)
     } else {
-        next({status: 403, message: "Forbidden page"})
+        next({code: 403, message: "Forbidden page"})
     }
   },
   Authorization(req, res, next){

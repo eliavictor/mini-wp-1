@@ -21,7 +21,7 @@ export default {
         const profile = googleUser.getBasicProfile()// etc etc
         const idToken= googleUser.getAuthResponse().id_token
         axios({
-            url: `http://localhost:3000/users/gsignin`,
+            url: `http://35.240.235.62/users/gsignin`,
             type: 'post',
             data: {
                 idToken

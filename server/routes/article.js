@@ -14,7 +14,6 @@ const multer = Multer({
 
 Router.get('/', articleController.list)
 Router.get('/:id', articleController.findOne)
-Router.get('/tags/:tag', articleController.findByTags)
 Router.use(Authentication)
 Router.post('/', multer.single('file'), uploadToGCS, articleController.create)
 Router.patch('/:id', Authorization, articleController.update)

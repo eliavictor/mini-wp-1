@@ -26,24 +26,6 @@ class ArticleController {
         .catch(next)
     }
 
-    static findByTags(req, res, next) {
-        Article.find()
-        .then(data => {
-            let arrArticle=[]
-            for (let i = 0; i < data.length; i++) {
-                for (let j = 0; j < data[i].tags.length; j++) {
-                    if (data[i].tags[j] == req.params.tag) {
-                        arrArticle.push(data[i])
-                    } else {
-                        arrArticle = data
-                    }
-                }
-            }
-            res.status(200).json(arrArticle)
-        })
-        .catch(next)
-    }
-
     static findOne(req, res, next) {
         Article.findOne({_id : req.params.id})
         .then(data => {

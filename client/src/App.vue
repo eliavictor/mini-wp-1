@@ -216,7 +216,7 @@ import gsignin from './components/googlesignin'
 import wysiwyg from "vue-wysiwyg/dist/vueWysiwyg.css"
 export default {
     data: {
-        baseUrl: 'http://localhost:3000',
+        baseUrl: 'http://35.240.235.62',
         truncate: true,
         isLogin: false,
         userId: "",

@@ -6,7 +6,7 @@ const { encrypt } = require('../helpers/bcryptjs')
 const userSchema = new Schema({
     name: {
         type: String,
-        required: [true, 'Please input user\'s password']
+        required: [true, 'Please input user\'s name']
     },
     email: {
         type: String,

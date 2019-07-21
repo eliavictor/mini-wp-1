@@ -8,6 +8,14 @@ module.exports = function(err, req, res, next) {
       res.status(err.code).json({
         message: err.message
       })
+    } else if (err.code === 401) {
+      res.status(err.code).json({
+        message: err.message
+      })
+    } else if (err.code === 403) {
+      res.status(err.code).json({
+        message: err.message
+      })
     } else if (stringifiedErr.indexOf('ValidatorError') !== -1) {
       const mongooseErrors = err.errors;
       const errors = [];
