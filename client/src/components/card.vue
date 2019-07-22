@@ -26,7 +26,7 @@ export default {
     props: ['article','login','id','trunc'],
     data: function() {
         return {
-            baseUrl: 'http://35.240.235.62',
+            baseUrl: 'http://35.240.235.62:3000',
             text: ""
         }
     },
