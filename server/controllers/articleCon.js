@@ -58,12 +58,12 @@ class ArticleController {
     }
 
     static updateWithoutImage(req, res, next) {
-        let tags = req.body.tags.split(',')
+        // let tags = req.body.tags.split(',')
         let obj = {
             title: req.body.title,
             body: req.body.body,
             img: req.body.img,
-            tags: tags
+            tags: req.body.tags
         }
         Article.findOne({_id : req.params.id})
         .then(data => {
