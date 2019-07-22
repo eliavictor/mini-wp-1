@@ -55,12 +55,12 @@ export default {
                         }
                     })            
                     .then(({data}) => {
-                        console.log(data)
                         Swal.fire(
                             'Deleted!',
                             'Your Article has been deleted.',
                             'success'
                         )
+                        this.$emit('retrieveArticle')
                         this.$emit('change-page', 'List Article')
                     })
                     .catch(err => {

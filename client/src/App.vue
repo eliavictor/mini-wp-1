@@ -115,7 +115,7 @@
                                         <label class="col-2" style="margin-top: 1%" for="img">Image:</label>
                                         <div class="custom-file col-10">
                                             <input type="file" class="custom-file-input" v-on:change="getDataImage" >
-                                            <label class="custom-file-label" for="customFile" style="text-align: left;">Choose file</label>
+                                            <label class="custom-file-label" for="customFile" style="text-align: left;">{{ newArticle.img.name }}</label>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -140,10 +140,9 @@
                                 <form @submit.prevent="submitEdit">
                                     <div class="form-group row">
                                         <label class="col-2" style="margin-top: 1%" for="img">Image:</label>
-                                        <!-- <input type="text" class="col-10 form-control" v-model="editArticle.img"> -->
                                         <div class="custom-file col-10">
-                                            <input type="file" class="custom-file-input" id="customFile">
-                                            <label class="custom-file-label" for="customFile" style="text-align: left;">Choose file</label>
+                                            <input type="file" class="custom-file-input" v-on:change="getDataImage">
+                                            <label class="custom-file-label" for="customFile" style="text-align: left;">{{ editArticle.img.name }}</label>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -167,8 +166,8 @@
                                 <p style="text-align:left">List of Tag :</p>                          
                                 <listtag style="max-height: 50px; overflow: auto;" :tags="tags" @tag-clicked="filteredByTag"></listtag><hr>
                                 <headers :title="pageDirection" @title-changed="test = $event"></headers>
-                                <card :login="isLogin" :trunc="truncate" :id="userId" v-show="!tagClicked" v-for="(article, index) in filteredArticle" keys="article._id" :article="article" @change-page="changePage" @retrieve-data="editingArticle(article._id) || fullArticle(article._id)"></card>
-                                <card :login="isLogin" :trunc="truncate" :id="userId" v-show="tagClicked" v-for="(article, index) in articleByTag" keys="article._id" :article="article" @change-page="changePage" @retrieve-data="editingArticle(article._id) || fullArticle(article._id)"></card>
+                                <card :login="isLogin" :trunc="truncate" :id="userId" v-show="!tagClicked" v-for="(article, index) in filteredArticle" keys="article._id" :article="article" @change-page="changePage" @retrieveArticle="retrieveArticle" @retrieve-data="editingArticle(article._id) || fullArticle(article._id)"></card>
+                                <card :login="isLogin" :trunc="truncate" :id="userId" v-show="tagClicked" v-for="(article, index) in articleByTag" keys="article._id" :article="article" @change-page="changePage" @retrieveArticle="retrieveArticle" @retrieve-data="editingArticle(article._id) || fullArticle(article._id)"></card>
                                 <!-- PAGINATION / BACK TOP-->
                                 <ul v-if="articles.length > 1" class="pagination pagination-sm" style="float: right; margin-right: 4%;">
                                     <li class="page-item"><a class="page-link" href="/" style="background-color: #343A40;; color: white;">Back to top   <i class="fas fa-chevron-up"></i></a></li>
@@ -281,6 +280,7 @@ export default {
             })     
             .then(response => {
                 this.articles = response.data
+                this.tags = []
                 this.retrieveTags()
             })
             .catch(err => {
@@ -307,6 +307,7 @@ export default {
                 })   
             })
             .catch(err => {
+                // err.request
                 console.log(err)
                 Swal.fire({
                     title: 'Failed to signup!',
@@ -381,8 +382,7 @@ export default {
             formData.append('title', this.newArticle.title)
             formData.append('tags', tags)
             formData.append('body', this.newArticle.body)
-            console.log(tags)
-            console.log(formData, 'ini form data')
+
             axios({
                 method: "POST",
                 url: `${this.baseUrl}/articles`,
@@ -417,6 +417,13 @@ export default {
         submitEdit() {
             this.editArticle.tags = this.editArticle.tags.split(',')
             let tags = [...new Set(this.editArticle.tags)]
+
+            let formData = new FormData()
+            formData.append('file', this.editArticle.img)
+            formData.append('title', this.editArticle.title)
+            formData.append('tags', tags)
+            formData.append('body', this.editArticle.body)
+
             let obj = {
                 img: this.editArticle.img,
                 title: this.editArticle.title,
@@ -453,7 +460,7 @@ export default {
                         this.retrieveArticle()
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log(err, err.message)
                         Swal.fire({
                             title: 'Failed to edit article!',
                             text: `${err.message}`,
