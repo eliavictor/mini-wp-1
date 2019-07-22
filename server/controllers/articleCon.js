@@ -38,7 +38,7 @@ class ArticleController {
         let obj = {
             title: req.body.title,
             body: req.body.body,
-            img: req.body.img,
+            img: req.file.cloudStoragePublicUrl,
             tags: req.body.tags
         }
         Article.findOne({_id : req.params.id})

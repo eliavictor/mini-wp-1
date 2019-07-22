@@ -16,7 +16,7 @@ Router.get('/', articleController.list)
 Router.get('/:id', articleController.findOne)
 Router.use(Authentication)
 Router.post('/', multer.single('file'), uploadToGCS, articleController.create)
-Router.patch('/:id', Authorization, articleController.update)
+Router.patch('/:id', multer.single('file'), uploadToGCS, Authorization, articleController.update)
 Router.delete('/:id', Authorization, articleController.delete)
 
 module.exports = Router;

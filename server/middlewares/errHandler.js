@@ -17,13 +17,17 @@ module.exports = function(err, req, res, next) {
         message: err.message
       })
     } else if (stringifiedErr.indexOf('ValidatorError') !== -1) {
+      console.log(stringifiedErr)
       const mongooseErrors = err.errors;
       const errors = [];
-  
+      /*
+        errors: {
+
+        }
+      */
       for (let key in mongooseErrors) {
         errors.push(mongooseErrors[key].message);
       }
-  
       res.status(400).json({ errors });
   
     } else if (stringifiedErr.indexOf('E11000') !== -1) {
