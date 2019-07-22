@@ -34,12 +34,35 @@ class ArticleController {
         .catch(next)
     }
 
-    static update(req, res, next) {
+    static updateWithImage(req, res, next) {
         let tags = req.body.tags.split(',')
         let obj = {
             title: req.body.title,
             body: req.body.body,
             img: req.file.cloudStoragePublicUrl,
+            tags: tags
+        }
+        Article.findOne({_id : req.params.id})
+        .then(data => {
+            if (!data) {
+                next({ code: 404, resource: 'Article' })
+            } else {
+                data.set(obj)
+                return data.save()
+            }
+        }) 
+        .then(data =>{
+            res.status(200).json(data)
+        })
+        .catch(next)
+    }
+
+    static updateWithoutImage(req, res, next) {
+        let tags = req.body.tags.split(',')
+        let obj = {
+            title: req.body.title,
+            body: req.body.body,
+            img: req.body.img,
             tags: tags
         }
         Article.findOne({_id : req.params.id})
