@@ -216,6 +216,7 @@ import gsignin from './components/googlesignin'
 import wysiwyg from "vue-wysiwyg/dist/vueWysiwyg.css"
 export default {
     data: {
+        // 35.240.235.62
         baseUrl: 'http://35.240.235.62:3000',
         truncate: true,
         isLogin: false,
@@ -376,7 +377,7 @@ export default {
                 this.newArticle.img = event.target.files[0]
             } 
             if (src === 'update') {
-                if (this.newArticle.img.name) {
+                if (event.target.files[0]) {
                     this.editArticle.img = event.target.files[0]
                 } else {
                     this.editArticle.img = this.editArticle.img
@@ -425,113 +426,111 @@ export default {
             })
         },
         submitEdit() {
-            // this.editArticle.tags = this.editArticle.tags.split(',')
-            // let tags = [...new Set(this.editArticle.tags)]
+            this.editArticle.tags = this.editArticle.tags.split(',')
+            let tags = [...new Set(this.editArticle.tags)]
 
-            console.log(this.editArticle.img.name)
+            if (typeof(this.editArticle.img) === 'object') {
+                let formData = new FormData()
+                formData.append('file', this.editArticle.img)
+                formData.append('title', this.editArticle.title)
+                formData.append('tags', tags)
+                formData.append('body', this.editArticle.body)
 
-            // if (this.editArticle.img.name) {
-            //     let formData = new FormData()
-            //     formData.append('file', this.editArticle.img)
-            //     formData.append('title', this.editArticle.title)
-            //     formData.append('tags', tags)
-            //     formData.append('body', this.editArticle.body)
+                Swal.fire({
+                    title: 'Are you sure edit article?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#343A40',
+                    cancelButtonColor: '#C82333',
+                    confirmButtonText: 'Yes, edit it!'
+                })
+                .then((result) => {
+                    if (result.value) {
+                        this.changePage('List Article')
+                        axios({
+                            method: "PATCH",
+                            url: `${this.baseUrl}/articles/updateImage/${this.editArticle.id}`,
+                            data: formData,
+                            headers: {
+                                "access_token" : localStorage.getItem('access_token')
+                            }
+                        })            
+                        .then(({data}) => {
+                            console.log(data)
+                            Swal.fire({
+                                title: 'Success edit article!',
+                                type: 'success'
+                            })   
+                            this.changePage('List Article')
+                            this.retrieveArticle()
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            Swal.fire({
+                                title: 'Failed to edit article!',
+                                text: `${err.message}`,
+                                type: 'error',
+                                confirmButtonText: 'Ok'
+                            })
+                        })
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+            } else {
+                let obj = {
+                    img : this.editArticle.img,
+                    title: this.editArticle.title,
+                    tags: tags,
+                    body: this.editArticle.body
+                }
 
-            //     Swal.fire({
-            //         title: 'Are you sure edit article?',
-            //         text: "You won't be able to revert this!",
-            //         type: 'warning',
-            //         showCancelButton: true,
-            //         confirmButtonColor: '#343A40',
-            //         cancelButtonColor: '#C82333',
-            //         confirmButtonText: 'Yes, edit it!'
-            //     })
-            //     .then((result) => {
-            //         if (result.value) {
-            //             this.changePage('List Article')
-            //             axios({
-            //                 method: "PATCH",
-            //                 url: `${this.baseUrl}/articles/updateImage/${this.editArticle.id}`,
-            //                 data: formData,
-            //                 headers: {
-            //                     "access_token" : localStorage.getItem('access_token')
-            //                 }
-            //             })            
-            //             .then(({data}) => {
-            //                 console.log(data)
-            //                 Swal.fire({
-            //                     title: 'Success edit article!',
-            //                     type: 'success'
-            //                 })   
-            //                 this.changePage('List Article')
-            //                 this.retrieveArticle()
-            //             })
-            //             .catch(err => {
-            //                 console.log(err, err.message)
-            //                 Swal.fire({
-            //                     title: 'Failed to edit article!',
-            //                     text: `${err.message}`,
-            //                     type: 'error',
-            //                     confirmButtonText: 'Ok'
-            //                 })
-            //             })
-            //         }
-            //     })
-            //     .catch(err => {
-            //         console.log(err)
-            //     })
-            // } else {
-            //     let obj = {
-            //         img : this.editArticle.img,
-            //         title: this.editArticle.title,
-            //         tags: tags,
-            //         body: this.editArticle.body
-            //     }
-
-            //     Swal.fire({
-            //         title: 'Are you sure edit article?',
-            //         text: "You won't be able to revert this!",
-            //         type: 'warning',
-            //         showCancelButton: true,
-            //         confirmButtonColor: '#343A40',
-            //         cancelButtonColor: '#C82333',
-            //         confirmButtonText: 'Yes, edit it!'
-            //     })
-            //     .then((result) => {
-            //         if (result.value) {
-            //             this.changePage('List Article')
-            //             axios({
-            //                 method: "PATCH",
-            //                 url: `${this.baseUrl}/articles/update/${this.editArticle.id}`,
-            //                 data: obj,
-            //                 headers: {
-            //                     "access_token" : localStorage.getItem('access_token')
-            //                 }
-            //             })            
-            //             .then(({data}) => {
-            //                 console.log(data)
-            //                 Swal.fire({
-            //                     title: 'Success edit article!',
-            //                     type: 'success'
-            //                 })   
-            //                 this.changePage('List Article')
-            //                 this.retrieveArticle()
-            //             })
-            //             .catch(err => {
-            //                 console.log(err, err.message)
-            //                 Swal.fire({
-            //                     title: 'Failed to edit article!',
-            //                     text: `${err.message}`,
-            //                     type: 'error',
-            //                     confirmButtonText: 'Ok'
-            //                 })
-            //             })
-            //         }
-            //     })
-            //     .catch(err => {
-            //         console.log(err)
-            //     })
-            // }
+                Swal.fire({
+                    title: 'Are you sure edit article?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#343A40',
+                    cancelButtonColor: '#C82333',
+                    confirmButtonText: 'Yes, edit it!'
+                })
+                .then((result) => {
+                    if (result.value) {
+                        this.changePage('List Article')
+                        axios({
+                            method: "PATCH",
+                            url: `${this.baseUrl}/articles/update/${this.editArticle.id}`,
+                            data: obj,
+                            headers: {
+                                "access_token" : localStorage.getItem('access_token')
+                            }
+                        })            
+                        .then(({data}) => {
+                            console.log(data)
+                            Swal.fire({
+                                title: 'Success edit article!',
+                                type: 'success'
+                            })   
+                            this.changePage('List Article')
+                            this.retrieveArticle()
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            Swal.fire({
+                                title: 'Failed to edit article!',
+                                text: `${err.message}`,
+                                type: 'error',
+                                confirmButtonText: 'Ok'
+                            })
+                        })
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+            }
         },
         editingArticle(i) {
             axios({
@@ -548,7 +547,6 @@ export default {
                 this.editArticle.tags = response.data.tags.join(',')
                 this.editArticle.body = response.data.body
                 this.editArticle.createdAt = response.data.createdAt
-                console.log(this.editArticle.img)
             })
             .catch(err => {
                 console.log(err)
