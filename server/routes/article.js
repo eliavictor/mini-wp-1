@@ -16,7 +16,7 @@ Router.get('/', articleController.list)
 Router.get('/:id', articleController.findOne)
 Router.use(Authentication)
 Router.post('/', multer.single('file'), uploadToGCS, articleController.create)
-Router.patch('/updateImage/:id', multer.single('file'), uploadToGCS, Authorization, articleController.updateWithImage)
+Router.patch('/updateImage/:id', Authorization, multer.single('file'), uploadToGCS, articleController.updateWithImage)
 Router.patch('/update/:id', Authorization, articleController.updateWithoutImage)
 Router.delete('/:id', Authorization, articleController.delete)
 
