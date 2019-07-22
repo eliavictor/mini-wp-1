@@ -35,11 +35,12 @@ class ArticleController {
     }
 
     static update(req, res, next) {
+        let tags = req.body.tags.split(',')
         let obj = {
             title: req.body.title,
             body: req.body.body,
             img: req.file.cloudStoragePublicUrl,
-            tags: req.body.tags
+            tags: tags
         }
         Article.findOne({_id : req.params.id})
         .then(data => {

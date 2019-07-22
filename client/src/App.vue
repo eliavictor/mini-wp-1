@@ -103,18 +103,18 @@
                             <div class="col-3"></div>
                             <!-- SIDEBAR -->
                             <div class="sidebar col-3" style="height: 45px;" v-if="pageDirection === 'List Article' || pageDirection === 'Add Article' || pageDirection === 'Edit Article' || pageDirection === 'Gallery List' || pageDirection === 'Article'">
-                                <button type="button" class="btn btn-dark" style="margin-top: 5%; margin-left: -25%; width: 80%;" @click.prevent="changePage('Add Article')">Add Article</button>
+                                <button type="button" class="btn btn-dark" style="margin-top: 5%; margin-left: -25%; width: 80%;" @click.prevent="changePage('Add Article')" v-show="isLogin">Add Article</button>
                                 <button type="button" class="btn btn-dark" style="margin-top: 5%; margin-left: -25%; width: 80%;" @click.prevent="changePage('List Article')">Article List</button>
                                 <button type="button" class="btn btn-dark" style="margin-top: 5%; margin-left: -25%; width: 80%;" @click.prevent="changePage('Gallery List')">Gallery List</button>
                             </div>
                             <!-- ADD ARTICLE -->
-                            <div class="col-9 collapse show" style="color: #343A40;" v-if="pageDirection === 'Add Article'">
+                            <div class="col-9 collapse show" style="color: #343A40;" v-if="pageDirection === 'Add Article'" v-show="isLogin">
                                 <headers :title="pageDirection" @title-changed="test = $event"></headers>
                                 <form @submit.prevent="addArticle">
                                     <div class="form-group row">
                                         <label class="col-2" style="margin-top: 1%" for="img">Image:</label>
                                         <div class="custom-file col-10">
-                                            <input type="file" class="custom-file-input" v-on:change="getDataImage" >
+                                            <input type="file" class="custom-file-input" v-on:change="getDataImage($event, 'add')" >
                                             <label class="custom-file-label" for="customFile" style="text-align: left;">{{ newArticle.img.name }}</label>
                                         </div>
                                     </div>
@@ -141,8 +141,9 @@
                                     <div class="form-group row">
                                         <label class="col-2" style="margin-top: 1%" for="img">Image:</label>
                                         <div class="custom-file col-10">
-                                            <input type="file" class="custom-file-input" v-on:change="getDataImage">
-                                            <label class="custom-file-label" for="customFile" style="text-align: left;">{{ editArticle.img.name }}</label>
+                                            <input type="file" class="custom-file-input" v-on:change="getDataImage($event, 'update')">
+                                            <label class="custom-file-label" for="customFile" style="text-align: left;" v-show="!editArticle.img.name">{{ editArticle.img }}</label>
+                                            <label class="custom-file-label" for="customFile" style="text-align: left;" v-show="editArticle.img.name">{{ editArticle.img.name }}</label>
                                         </div>
                                     </div>
                                     <div class="form-group row">
@@ -370,8 +371,13 @@ export default {
                 }
             })
         },
-        getDataImage(event) {
-            this.newArticle.img = event.target.files[0]  
+        getDataImage(event, src) {
+            if (src === 'add') {
+                this.newArticle.img = event.target.files[0]
+            } 
+            if (src === 'update') {
+                this.editArticle.img = event.target.files[0]
+            }
         },
         addArticle() {
             this.newArticle.tags = this.newArticle.tags.split(',')
@@ -424,13 +430,6 @@ export default {
             formData.append('tags', tags)
             formData.append('body', this.editArticle.body)
 
-            let obj = {
-                img: this.editArticle.img,
-                title: this.editArticle.title,
-                tags: tags,
-                body: this.editArticle.body
-            }
-            // console.log(obj)
             Swal.fire({
                 title: 'Are you sure edit article?',
                 text: "You won't be able to revert this!",
@@ -445,7 +444,7 @@ export default {
                     axios({
                         method: "PATCH",
                         url: `${this.baseUrl}/articles/${this.editArticle.id}`,
-                        data: obj,
+                        data: formData,
                         headers: {
                             "access_token" : localStorage.getItem('access_token')
                         }
